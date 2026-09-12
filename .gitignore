@@ -1,0 +1,6 @@
+node_modules/
+.env
+jobflow.sqlite
+jobflow.sqlite-shm
+jobflow.sqlite-wal
+.DS_Store

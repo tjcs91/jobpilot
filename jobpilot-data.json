@@ -1,0 +1,68 @@
+{
+  "businesses": [
+    {
+      "id": "dc46ed79-d7fd-4f54-bafc-70c0025759c5",
+      "name": "Tom Detail",
+      "ownerName": "Tom",
+      "email": "tom@example.test",
+      "phone": "07123456789",
+      "slug": "tom-detail",
+      "createdAt": "2026-09-12T10:54:53.051Z",
+      "plan": "trial"
+    }
+  ],
+  "users": [
+    {
+      "id": "f027d31b-5bb2-41ef-9a35-b2e10a62da7c",
+      "businessId": "dc46ed79-d7fd-4f54-bafc-70c0025759c5",
+      "email": "tom@example.test",
+      "passwordHash": "0fee8b0c73f5f261109a4c29e55ac248ecbec553efa0426585591caab40b5cd0",
+      "createdAt": "2026-09-12T10:54:53.051Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "2600e2f05409e9c118e7ee4a64e9154e86878667fd3534212b4b0013c82a258d",
+      "userId": "f027d31b-5bb2-41ef-9a35-b2e10a62da7c",
+      "expiresAt": "2026-10-12T10:54:53.106Z"
+    }
+  ],
+  "services": [
+    {
+      "id": "fafa3d4f-2e61-4f43-b935-fb0d10e688a5",
+      "businessId": "dc46ed79-d7fd-4f54-bafc-70c0025759c5",
+      "name": "Full Valet",
+      "durationMin": 120,
+      "pricePence": 8000,
+      "active": true
+    },
+    {
+      "id": "015d496b-5f5b-42cf-a0d5-2e7600ca4f61",
+      "businessId": "dc46ed79-d7fd-4f54-bafc-70c0025759c5",
+      "name": "Mini Valet",
+      "durationMin": 60,
+      "pricePence": 4500,
+      "active": true
+    },
+    {
+      "id": "05027182-7e98-4224-ada6-e97249b368b6",
+      "businessId": "dc46ed79-d7fd-4f54-bafc-70c0025759c5",
+      "name": "Exterior Detail",
+      "durationMin": 90,
+      "pricePence": 6000,
+      "active": true
+    }
+  ],
+  "customers": [],
+  "bookings": [],
+  "settings": [
+    {
+      "businessId": "dc46ed79-d7fd-4f54-bafc-70c0025759c5",
+      "intro": "",
+      "workingStart": "08:00",
+      "workingEnd": "18:00",
+      "bookingNoticeHours": 2,
+      "bufferMin": 30
+    }
+  ]
+}
