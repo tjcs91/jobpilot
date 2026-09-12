@@ -1,42 +1,1552 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JobPilot</title><style>
-:root{--bg:#f5f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--nav:#081522;--accent:#22b8f0;--accent2:#16a34a;--danger:#b42318}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}header{height:66px;background:var(--nav);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:5}.logo{font-weight:950;font-size:21px;letter-spacing:-.4px}.logo span{color:var(--accent)}.who{font-size:13px;color:#b6c6d6}.layout{display:grid;grid-template-columns:225px 1fr;min-height:calc(100vh - 66px)}aside{background:var(--nav);padding:14px}aside button{width:100%;border:0;background:transparent;color:#b9c6d5;padding:11px 12px;text-align:left;border-radius:10px;margin-bottom:4px;cursor:pointer;font:inherit}aside button.active,aside button:hover{background:#12263a;color:#fff}main{padding:28px;max-width:1380px;width:100%;margin:auto}.view{display:none}.view.active{display:block}.top{display:flex;justify-content:space-between;align-items:end;gap:14px;margin-bottom:18px}.top h1{margin:0 0 5px;font-size:30px;letter-spacing:-.8px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}.metric{font-size:29px;font-weight:950;margin:7px 0}.muted{color:var(--muted);line-height:1.5}.grid2{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#062235;font-weight:900;cursor:pointer}.btn.alt{background:#e8f7fd;color:#08658c}.btn.gray{background:#eef2f6;color:#334155}.btn.danger{background:#fef2f2;color:var(--danger)}.actions{display:flex;gap:8px;flex-wrap:wrap}input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;background:#fff}textarea{resize:vertical}.field{margin:0 0 12px}.field label{display:block;font-size:13px;font-weight:900;margin-bottom:6px}table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}.tablecard{overflow:auto}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:900}.pill.blue{background:#e0f2fe;color:#075985}.pill.gray{background:#f1f5f9;color:#475569}.auth{max-width:470px;margin:70px auto}.notice{padding:10px 12px;border-radius:9px;background:#eff8ff;color:#175cd3;margin-bottom:12px}.hidden{display:none!important}.modal{position:fixed;inset:0;background:rgba(2,8,23,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal.show{display:flex}.modalbox{background:#fff;border-radius:16px;max-width:640px;width:100%;padding:22px;max-height:90vh;overflow:auto}.heroCard{background:linear-gradient(135deg,#081522,#11304b);color:#fff;border-radius:18px;padding:24px;margin-bottom:14px}.heroCard .muted{color:#b8cadb}.statline{display:flex;gap:15px;flex-wrap:wrap;margin-top:15px}.statline div{padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.05)}.empty{padding:20px 0;text-align:center}.linkbox{display:flex;gap:8px}.linkbox input{flex:1}.small{font-size:12px}.success{padding:12px;border-radius:10px;background:#ecfdf3;color:#166534}.warning{padding:12px;border-radius:10px;background:#fff7ed;color:#9a3412}@media(max-width:980px){.layout{grid-template-columns:1fr}aside{display:flex;overflow:auto;gap:4px;position:sticky;top:66px;z-index:4}aside button{white-space:nowrap;width:auto}.cards{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}}@media(max-width:580px){main{padding:16px}.cards{grid-template-columns:1fr}.top{align-items:stretch;flex-direction:column}.heroCard{padding:18px}}
-</style></head><body><header><div class="logo">JobPilot <span>AI</span></div><div class="who" id="who"></div></header>
-<div id="auth" class="auth card"><div id="authNotice" class="notice hidden"></div><div id="loginBox"><h1>Sign in</h1><p class="muted">Run your business from one place.</p><div class="field"><label>Email</label><input id="loginEmail" type="email" autocomplete="email"></div><div class="field"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password"></div><button class="btn" onclick="login()">Sign in</button><button class="btn gray" onclick="showSignup()" style="margin-left:7px">Start free trial</button></div><div id="signupBox" class="hidden"><h1>Start your 14-day trial</h1><p class="muted">No card required while you test the workflow.</p><div class="field"><label>Business name</label><input id="suBiz"></div><div class="field"><label>Your name</label><input id="suOwner"></div><div class="field"><label>Email</label><input id="suEmail" type="email"></div><div class="field"><label>Password</label><input id="suPassword" type="password" placeholder="8+ characters"></div><div class="field"><label>Phone</label><input id="suPhone"></div><button class="btn" onclick="signup()">Create account</button><button class="btn gray" onclick="showLogin()" style="margin-left:7px">Back</button></div></div>
-<div id="shell" class="layout hidden"><aside><button class="active" data-view="dashboard">Overview</button><button data-view="bookings">Bookings</button><button data-view="customers">Customers</button><button data-view="services">Services</button><button data-view="quote">AI Quote</button><button data-view="settings">Settings</button><button onclick="logout()" style="margin-top:18px">Sign out</button></aside><main>
-<section class="view active" id="dashboard"><div class="heroCard"><div class="small">YOUR JOBPILOT DASHBOARD</div><h1 style="font-size:31px;margin:8px 0">Less admin. More jobs.</h1><div class="muted">Your booking link is ready to share. Add services and start taking real enquiries.</div><div class="statline"><div><b id="trialPlan">Trial</b><br><span class="small">current plan</span></div><div><b id="heroToday">0</b><br><span class="small">jobs today</span></div><div><b id="heroUpcoming">£0</b><br><span class="small">upcoming value</span></div></div></div><div class="top"><div><h1>Overview</h1><div class="muted">Your business at a glance.</div></div><button class="btn" onclick="openBooking()">+ New booking</button></div><div class="cards"><div class="card"><div class="muted">Today's jobs</div><div class="metric" id="mToday">0</div></div><div class="card"><div class="muted">Upcoming revenue</div><div class="metric" id="mRevenue">£0</div></div><div class="card"><div class="muted">Customers</div><div class="metric" id="mCustomers">0</div></div><div class="card"><div class="muted">Bookings this month</div><div class="metric" id="mMonth">0</div></div></div><div class="grid2" style="margin-top:14px"><div class="card"><h2>Next jobs</h2><div id="nextJobs"></div></div><div class="card"><h2>Customer booking page</h2><p class="muted">Share this link on Instagram, Facebook, Google or WhatsApp.</p><div class="linkbox"><input id="bookingLink" readonly><button class="btn alt" onclick="copyLink()">Copy</button></div><p class="small muted" id="bookingLinkHint"></p></div></div></section>
-<section class="view" id="bookings"><div class="top"><div><h1>Bookings</h1><div class="muted">Keep your diary and job statuses up to date.</div></div><button class="btn" onclick="openBooking()">+ New booking</button></div><div class="card tablecard"><table><thead><tr><th>Date</th><th>Customer</th><th>Service</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody id="bookingRows"></tbody></table></div></section>
-<section class="view" id="customers"><div class="top"><div><h1>Customers</h1><div class="muted">Keep customer and vehicle details handy for repeat jobs.</div></div><button class="btn" onclick="openCustomer()">+ New customer</button></div><div class="card tablecard"><table><thead><tr><th>Name</th><th>Phone</th><th>Vehicle</th><th>Bookings</th></tr></thead><tbody id="customerRows"></tbody></table></div></section>
-<section class="view" id="services"><div class="top"><div><h1>Services & pricing</h1><div class="muted">These prices power your booking page and quote assistant.</div></div><button class="btn" onclick="openService()">+ Add service</button></div><div class="grid3" id="serviceCards"></div></section>
-<section class="view" id="quote"><div class="top"><div><h1>AI Quote Assistant</h1><div class="muted">Draft a reply using your services and pricing. Review before sending.</div></div></div><div class="grid2"><div class="card"><div class="field"><label>Customer name</label><input id="qName" placeholder="Jamie"></div><div class="field"><label>Customer enquiry</label><textarea id="qMessage" rows="8" placeholder="Hi, how much for a full valet on my BMW 3 Series next Saturday?"></textarea></div><button class="btn" onclick="makeQuote()">Generate draft</button></div><div class="card"><div class="field"><label>Draft reply</label><textarea id="qOutput" rows="11" placeholder="Your draft will appear here..."></textarea></div><button class="btn alt" onclick="copyQuote()">Copy reply</button></div></div></section>
-<section class="view" id="settings"><div class="top"><div><h1>Settings</h1><div class="muted">Make the booking page feel like your business.</div></div></div><div class="card" style="max-width:760px"><div class="grid2"><div><div class="field"><label>Business name</label><input id="setBiz"></div><div class="field"><label>Owner name</label><input id="setOwner"></div><div class="field"><label>Phone</label><input id="setPhone"></div></div><div><div class="field"><label>Public booking slug</label><input id="setSlug" readonly></div><div class="field"><label>Booking page intro</label><textarea id="setIntro" rows="5" placeholder="Professional mobile car detailing at your home or workplace."></textarea></div></div></div><div class="grid2"><div class="field"><label>Working day starts</label><input id="setStart" type="time"></div><div class="field"><label>Working day ends</label><input id="setEnd" type="time"></div></div><div class="actions"><button class="btn" onclick="saveSettings()">Save settings</button><span id="settingsMsg" class="small muted"></span></div></div><div class="card" style="max-width:760px;margin-top:14px"><h2>Subscription</h2><p class="muted">Your account is currently on the trial. When we're ready to sell publicly, this button will connect to Stripe checkout.</p><div class="grid3"><div><b>Starter</b><div class="small muted">£19.99/mo</div></div><div><b>Pro</b><div class="small muted">£39.99/mo</div></div><div><b>Business</b><div class="small muted">£79.99/mo</div></div></div><button class="btn alt" onclick="checkout()" style="margin-top:14px">Start subscription</button></div></section>
-</main></div><div id="modal" class="modal"><div class="modalbox" id="modalBox"></div></div>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JobPilot</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--nav:#081522;--accent:#22b8f0;--accent2:#16a34a;--danger:#b42318}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+header{height:66px;background:var(--nav);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:5}
+.logo{font-weight:950;font-size:21px;letter-spacing:-.4px}
+.logo span{color:var(--accent)}
+.who{font-size:13px;color:#b6c6d6}
+.layout{display:grid;grid-template-columns:225px 1fr;min-height:calc(100vh - 66px)}
+aside{background:var(--nav);padding:14px}
+aside button{width:100%;border:0;background:transparent;color:#b9c6d5;padding:11px 12px;text-align:left;border-radius:10px;margin-bottom:4px;cursor:pointer;font:inherit}
+aside button.active,aside button:hover{background:#12263a;color:#fff}
+main{padding:28px;max-width:1380px;width:100%;margin:auto}
+.view{display:none}
+.view.active{display:block}
+.top{display:flex;justify-content:space-between;align-items:end;gap:14px;margin-bottom:18px}
+.top h1{margin:0 0 5px;font-size:30px;letter-spacing:-.8px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.metric{font-size:29px;font-weight:950;margin:7px 0}
+.muted{color:var(--muted);line-height:1.5}
+.grid2{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.btn{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#062235;font-weight:900;cursor:pointer}
+.btn.alt{background:#e8f7fd;color:#08658c}
+.btn.gray{background:#eef2f6;color:#334155}
+.btn.danger{background:#fef2f2;color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;background:#fff}
+textarea{resize:vertical}
+.field{margin:0 0 12px}
+.field label{display:block;font-size:13px;font-weight:900;margin-bottom:6px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}
+.tablecard{overflow:auto}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:900}
+.pill.blue{background:#e0f2fe;color:#075985}
+.pill.gray{background:#f1f5f9;color:#475569}
+.auth{max-width:470px;margin:70px auto}
+.notice{padding:10px 12px;border-radius:9px;background:#eff8ff;color:#175cd3;margin-bottom:12px}
+.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:rgba(2,8,23,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal.show{display:flex}
+.modalbox{background:#fff;border-radius:16px;max-width:640px;width:100%;padding:22px;max-height:90vh;overflow:auto}
+.heroCard{background:linear-gradient(135deg,#081522,#11304b);color:#fff;border-radius:18px;padding:24px;margin-bottom:14px}
+.heroCard .muted{color:#b8cadb}
+.statline{display:flex;gap:15px;flex-wrap:wrap;margin-top:15px}
+.statline div{padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.05)}
+.empty{padding:20px 0;text-align:center}
+.linkbox{display:flex;gap:8px}
+.linkbox input{flex:1}
+.small{font-size:12px}
+.success{padding:12px;border-radius:10px;background:#ecfdf3;color:#166534}
+.warning{padding:12px;border-radius:10px;background:#fff7ed;color:#9a3412}
+
+@media(max-width:980px){
+  .layout{grid-template-columns:1fr}
+  aside{display:flex;overflow:auto;gap:4px;position:sticky;top:66px;z-index:4}
+  aside button{white-space:nowrap;width:auto}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grid2,.grid3{grid-template-columns:1fr}
+}
+
+@media(max-width:580px){
+  main{padding:16px}
+  .cards{grid-template-columns:1fr}
+  .top{align-items:stretch;flex-direction:column}
+  .heroCard{padding:18px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">JobPilot <span>AI</span></div>
+  <div class="who" id="who"></div>
+</header>
+
+<div id="auth" class="auth card">
+
+  <div id="authNotice" class="notice hidden"></div>
+
+  <div id="loginBox">
+    <h1>Sign in</h1>
+    <p class="muted">Run your business from one place.</p>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="loginEmail" type="email" autocomplete="email">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password">
+    </div>
+
+    <button class="btn" onclick="login()">Sign in</button>
+    <button class="btn gray" onclick="showSignup()" style="margin-left:7px">Start free trial</button>
+  </div>
+
+  <div id="signupBox" class="hidden">
+    <h1>Start your 14-day trial</h1>
+    <p class="muted">No card required while you test the workflow.</p>
+
+    <div class="field">
+      <label>Business name</label>
+      <input id="suBiz">
+    </div>
+
+    <div class="field">
+      <label>Your name</label>
+      <input id="suOwner">
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="suEmail" type="email">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input id="suPassword" type="password" placeholder="8+ characters">
+    </div>
+
+    <div class="field">
+      <label>Phone</label>
+      <input id="suPhone">
+    </div>
+
+    <button class="btn" onclick="signup()">Create account</button>
+    <button class="btn gray" onclick="showLogin()" style="margin-left:7px">Back</button>
+  </div>
+
+</div>
+
+<div id="shell" class="layout hidden">
+
+<aside>
+  <button class="active" data-view="dashboard">Overview</button>
+  <button data-view="bookings">Bookings</button>
+  <button data-view="customers">Customers</button>
+  <button data-view="services">Services</button>
+  <button data-view="quote">AI Quote</button>
+  <button data-view="settings">Settings</button>
+  <button onclick="logout()" style="margin-top:18px">Sign out</button>
+</aside>
+
+<main>
+
+<section class="view active" id="dashboard">
+
+  <div class="heroCard">
+    <div class="small">YOUR JOBPILOT DASHBOARD</div>
+    <h1 style="font-size:31px;margin:8px 0">Less admin. More jobs.</h1>
+    <div class="muted">Your booking link is ready to share. Add services and start taking real enquiries.</div>
+
+    <div class="statline">
+      <div>
+        <b id="trialPlan">Trial</b><br>
+        <span class="small">current plan</span>
+      </div>
+
+      <div>
+        <b id="heroToday">0</b><br>
+        <span class="small">jobs today</span>
+      </div>
+
+      <div>
+        <b id="heroUpcoming">£0</b><br>
+        <span class="small">upcoming value</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="top">
+    <div>
+      <h1>Overview</h1>
+      <div class="muted">Your business at a glance.</div>
+    </div>
+    <button class="btn" onclick="openBooking()">+ New booking</button>
+  </div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="muted">Today's jobs</div>
+      <div class="metric" id="mToday">0</div>
+    </div>
+
+    <div class="card">
+      <div class="muted">Upcoming revenue</div>
+      <div class="metric" id="mRevenue">£0</div>
+    </div>
+
+    <div class="card">
+      <div class="muted">Customers</div>
+      <div class="metric" id="mCustomers">0</div>
+    </div>
+
+    <div class="card">
+      <div class="muted">Bookings this month</div>
+      <div class="metric" id="mMonth">0</div>
+    </div>
+
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+
+    <div class="card">
+      <h2>Next jobs</h2>
+      <div id="nextJobs"></div>
+    </div>
+
+    <div class="card">
+      <h2>Customer booking page</h2>
+      <p class="muted">Share this link on Instagram, Facebook, Google or WhatsApp.</p>
+
+      <div class="linkbox">
+        <input id="bookingLink" readonly>
+        <button class="btn alt" onclick="copyLink()">Copy</button>
+      </div>
+
+      <p class="small muted" id="bookingLinkHint"></p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="view" id="bookings">
+
+  <div class="top">
+    <div>
+      <h1>Bookings</h1>
+      <div class="muted">Keep your diary and job statuses up to date.</div>
+    </div>
+
+    <button class="btn" onclick="openBooking()">+ New booking</button>
+  </div>
+
+  <div class="card tablecard">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Service</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody id="bookingRows"></tbody>
+    </table>
+  </div>
+
+</section>
+
+
+<section class="view" id="customers">
+
+  <div class="top">
+    <div>
+      <h1>Customers</h1>
+      <div class="muted">Keep customer and vehicle details handy for repeat jobs.</div>
+    </div>
+
+    <button class="btn" onclick="openCustomer()">+ New customer</button>
+  </div>
+
+  <div class="card tablecard">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Vehicle</th>
+          <th>Bookings</th>
+        </tr>
+      </thead>
+
+      <tbody id="customerRows"></tbody>
+    </table>
+  </div>
+
+</section>
+
+
+<section class="view" id="services">
+
+  <div class="top">
+    <div>
+      <h1>Services & pricing</h1>
+      <div class="muted">These prices power your booking page and quote assistant.</div>
+    </div>
+
+    <button class="btn" onclick="openService()">+ Add service</button>
+  </div>
+
+  <div class="grid3" id="serviceCards"></div>
+
+</section>
+
+
+<section class="view" id="quote">
+
+  <div class="top">
+    <div>
+      <h1>AI Quote Assistant</h1>
+      <div class="muted">Draft a reply using your services and pricing. Review before sending.</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+
+    <div class="card">
+
+      <div class="field">
+        <label>Customer name</label>
+        <input id="qName" placeholder="Jamie">
+      </div>
+
+      <div class="field">
+        <label>Customer enquiry</label>
+        <textarea id="qMessage" rows="8" placeholder="Hi, how much for a full valet on my BMW 3 Series next Saturday?"></textarea>
+      </div>
+
+      <button class="btn" onclick="makeQuote()">Generate draft</button>
+
+    </div>
+
+    <div class="card">
+
+      <div class="field">
+        <label>Draft reply</label>
+        <textarea id="qOutput" rows="11" placeholder="Your draft will appear here..."></textarea>
+      </div>
+
+      <button class="btn alt" onclick="copyQuote()">Copy reply</button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="view" id="settings">
+
+  <div class="top">
+    <div>
+      <h1>Settings</h1>
+      <div class="muted">Make the booking page feel like your business.</div>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:760px">
+
+    <div class="grid2">
+
+      <div>
+
+        <div class="field">
+          <label>Business name</label>
+          <input id="setBiz">
+        </div>
+
+        <div class="field">
+          <label>Owner name</label>
+          <input id="setOwner">
+        </div>
+
+        <div class="field">
+          <label>Phone</label>
+          <input id="setPhone">
+        </div>
+
+      </div>
+
+      <div>
+
+        <div class="field">
+          <label>Public booking slug</label>
+          <input id="setSlug" readonly>
+        </div>
+
+        <div class="field">
+          <label>Booking page intro</label>
+          <textarea id="setIntro" rows="5" placeholder="Professional mobile car detailing at your home or workplace."></textarea>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="grid2">
+
+      <div class="field">
+        <label>Working day starts</label>
+        <input id="setStart" type="time">
+      </div>
+
+      <div class="field">
+        <label>Working day ends</label>
+        <input id="setEnd" type="time">
+      </div>
+
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="saveSettings()">Save settings</button>
+      <span id="settingsMsg" class="small muted"></span>
+    </div>
+
+  </div>
+
+
+  <div class="card" style="max-width:760px;margin-top:14px">
+
+    <h2>Subscription</h2>
+
+    <p class="muted">
+      Your account is currently on the trial. When we're ready to sell publicly,
+      this button will connect to Stripe checkout.
+    </p>
+
+    <div class="grid3">
+
+      <div>
+        <b>Starter</b>
+        <div class="small muted">£19.99/mo</div>
+      </div>
+
+      <div>
+        <b>Pro</b>
+        <div class="small muted">£39.99/mo</div>
+      </div>
+
+      <div>
+        <b>Business</b>
+        <div class="small muted">£79.99/mo</div>
+      </div>
+
+    </div>
+
+    <button class="btn alt" onclick="checkout()" style="margin-top:14px">
+      Start subscription
+    </button>
+
+  </div>
+
+</section>
+
+</main>
+</div>
+
+
+<div id="modal" class="modal">
+  <div class="modalbox" id="modalBox"></div>
+</div>
+
+
 <script>
-let me,services=[],customers=[],bookings=[];const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));const money=p=>'£'+(Number(p||0)/100).toFixed(2);const today=()=>new Date().toISOString().slice(0,10);
-async function api(url,opt={}){const r=await fetch(url,{headers:{'Content-Type':'application/json',...(opt.headers||{})},...opt});let data={};try{data=await r.json()}catch{}if(!r.ok)throw new Error(data.error||'Something went wrong');return data}
-function showLogin(){$('loginBox').classList.remove('hidden');$('signupBox').classList.add('hidden')}function showSignup(){$('loginBox').classList.add('hidden');$('signupBox').classList.remove('hidden')}function notice(m){$('authNotice').textContent=m;$('authNotice').classList.remove('hidden')}
-async function login(){try{await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('loginEmail').value,password:$('loginPassword').value})});init()}catch(e){notice(e.message)}}
-async function signup(){try{await api('/api/auth/signup',{method:'POST',body:JSON.stringify({businessName:$('suBiz').value,ownerName:$('suOwner').value,email:$('suEmail').value,password:$('suPassword').value,phone:$('suPhone').value})});init()}catch(e){notice(e.message)}}
-async function logout(){await api('/api/auth/logout',{method:'POST'});location.href='/app'}
-async function init(){try{const d=await api('/api/me');me={...d.user,business:d.business};$('auth').classList.add('hidden');$('shell').classList.remove('hidden');$('who').textContent=me.business.name;$('trialPlan').textContent=me.business.plan==='trial'?'Free trial':me.business.plan;$('bookingLink').value=location.origin+'/book/'+me.business.slug;$('setSlug').value=me.business.slug;document.querySelectorAll('aside button[data-view]').forEach(b=>b.onclick=()=>switchView(b.dataset.view));await refresh();await loadSettings();const params=new URLSearchParams(location.search);if(params.get('signup')==='1'){/* no-op */}}catch(e){$('shell').classList.add('hidden');$('auth').classList.remove('hidden');if(new URLSearchParams(location.search).get('signup')==='1')showSignup()}}
-function switchView(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));document.querySelectorAll('aside button[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v))}
-async function refresh(){[services,customers,bookings]=await Promise.all([api('/api/services'),api('/api/customers'),api('/api/bookings')]);render()}
-function render(){const t=today();const month=t.slice(0,7);const future=bookings.filter(b=>b.date>=t&&b.status!=='Cancelled');$('mToday').textContent=bookings.filter(b=>b.date===t&&b.status!=='Cancelled').length;$('mRevenue').textContent=money(future.reduce((a,b)=>a+b.pricePence,0));$('mCustomers').textContent=customers.length;$('mMonth').textContent=bookings.filter(b=>b.date.startsWith(month)).length;$('heroToday').textContent=$('mToday').textContent;$('heroUpcoming').textContent=$('mRevenue').textContent;$('bookingLinkHint').textContent=`Your page is /book/${me.business.slug}`;
-const sorted=[...bookings].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));$('nextJobs').innerHTML=sorted.filter(b=>b.date>=t&&b.status!=='Cancelled').slice(0,6).map(b=>`<div style="padding:10px 0;border-bottom:1px solid #e2e8f0"><b>${esc(b.customerName)}</b> <span class="pill">${esc(b.status)}</span><div class="muted">${b.date} ${b.time} · ${esc(b.serviceName)} · ${money(b.pricePence)}</div></div>`).join('')||'<div class="empty muted">No upcoming jobs yet. Share your booking link to get started.</div>';
-$('bookingRows').innerHTML=bookings.slice().reverse().map(b=>`<tr><td>${b.date}<br><span class="muted">${b.time}</span></td><td><b>${esc(b.customerName)}</b><br><span class="muted">${esc(b.phone||'')}</span></td><td>${esc(b.serviceName)}</td><td>${money(b.pricePence)}</td><td><span class="pill ${b.status==='Completed'?'blue':b.status==='Cancelled'?'gray':''}">${esc(b.status)}</span></td><td><button class="btn gray" onclick="updateStatus('${b.id}','Completed')">Complete</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">No bookings.</td></tr>';
-$('customerRows').innerHTML=customers.map(c=>`<tr><td><b>${esc(c.name)}</b><br><span class="muted">${esc(c.email||'')}</span></td><td>${esc(c.phone||'')}</td><td>${esc(c.vehicleDetails||'')}</td><td>${c.bookings_count||0}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No customers yet.</td></tr>';
-$('serviceCards').innerHTML=services.map(s=>`<div class="card"><div class="small muted">SERVICE</div><h3 style="margin:7px 0">${esc(s.name)}</h3><div class="metric">${money(s.pricePence))}</div><div class="muted">${s.durationMin} minutes</div></div>`).join('')||'<div class="card"><div class="muted">No services yet.</div></div>';}
-async function updateStatus(id,status){try{await api('/api/bookings/'+id,{method:'PATCH',body:JSON.stringify({status})});await refresh()}catch(e){alert(e.message)}}
-async function loadSettings(){try{const d=await api('/api/settings');$('setBiz').value=d.business.name||'';$('setOwner').value=d.business.owner_name||'';$('setPhone').value=d.business.phone||'';$('setSlug').value=d.business.slug||'';$('setIntro').value=d.settings.intro||'';$('setStart').value=d.settings.workingStart||'08:00';$('setEnd').value=d.settings.workingEnd||'18:00'}catch(e){} }
-async function saveSettings(){try{await api('/api/settings',{method:'PATCH',body:JSON.stringify({name:$('setBiz').value,ownerName:$('setOwner').value,phone:$('setPhone').value,intro:$('setIntro').value,workingStart:$('setStart').value,workingEnd:$('setEnd').value})});$('settingsMsg').textContent='Saved.';setTimeout(()=>$('settingsMsg').textContent='',1800);await init()}catch(e){alert(e.message)}}
-function openModal(html){$('modalBox').innerHTML=html;$('modal').classList.add('show')}function closeModal(){$('modal').classList.remove('show')}
-function openCustomer(){openModal(`<h2>New customer</h2><div class="field"><label>Name</label><input id="cName"></div><div class="field"><label>Phone</label><input id="cPhone"></div><div class="field"><label>Email</label><input id="cEmail"></div><div class="field"><label>Vehicle</label><input id="cVehicle" placeholder="BMW 3 Series, black"></div><div class="actions"><button class="btn" onclick="addCustomer()">Save customer</button><button class="btn gray" onclick="closeModal()">Cancel</button></div>`)}
-async function addCustomer(){try{await api('/api/customers',{method:'POST',body:JSON.stringify({name:$('cName').value,phone:$('cPhone').value,email:$('cEmail').value,vehicleDetails:$('cVehicle').value})});closeModal();await refresh()}catch(e){alert(e.message)}}
-function openService(){openModal(`<h2>Add a service</h2><div class="field"><label>Name</label><input id="sName" placeholder="Full Valet"></div><div class="grid2"><div class="field"><label>Duration (minutes)</label><input id="sDur" type="number" value="90"></div><div class="field"><label>Price (£)</label><input id="sPrice" type="number" step="0.01" value="80"></div></div><div class="actions"><button class="btn" onclick="addService()">Save service</button><button class="btn gray" onclick="closeModal()">Cancel</button></div>`)}
-async function addService(){try{await api('/api/services',{method:'POST',body:JSON.stringify({name:$('sName').value,durationMin:$('sDur').value,price:$('sPrice').value})});closeModal();await refresh()}catch(e){alert(e.message)}}
-function openBooking(){if(!customers.length){alert('Add a customer first, or use your public booking page to create the first customer.');return}openModal(`<h2>New booking</h2><div class="field"><label>Customer</label><select id="bC"><option value="">Select customer</option>${customers.map(c=>`<option value="${c.id}">${esc(c.name)} — ${esc(c.phone||'')}</option>`).join('')}</select></div><div class="field"><label>Service</label><select id="bS">${services.map(s=>`<option value="${s.id}">${esc(s.name)} — ${money(b.pricePence)}</option>`).join('')}</select></div><div class="grid2"><div class="field"><label>Date</label><input id="bD" type="date" value="${today()}"></div><div class="field"><label>Time</label><input id="bT" type="time" value="10:00"></div></div><div class="field"><label>Address</label><input id="bA"></div><div class="field"><label>Notes</label><textarea id="bN"></textarea></div><div class="actions"><button class="btn" onclick="addBooking()">Create booking</button><button class="btn gray" onclick="closeModal()">Cancel</button></div>`)}
-async function addBooking(){try{await api('/api/bookings',{method:'POST',body:JSON.stringify({customerId:$('bC').value,serviceId:$('bS').value,date:$('bD').value,time:$('bT').value,address:$('bA').value,notes:$('bN').value})});closeModal();await refresh()}catch(e){alert(e.message)}}
-async function makeQuote(){try{$('qOutput').value='Generating…';const d=await api('/api/quotes/draft',{method:'POST',body:JSON.stringify({customerName:$('qName').value||'there',message:$('qMessage').value})});$('qOutput').value=d.draft}catch(e){alert(e.message);$('qOutput').value=''}}
-function copyText(v){navigator.clipboard?.writeText(v)}function copyQuote(){copyText($('qOutput').value)}function copyLink(){copyText($('bookingLink').value);$('bookingLinkHint').textContent='Copied to clipboard.';setTimeout(()=>render(),1800)}
-async function checkout(){try{const d=await api('/api/billing/checkout',{method:'POST'});location.href=d.url}catch(e){alert(e.message)}}
+
+let me;
+let services=[];
+let customers=[];
+let bookings=[];
+
+const $=id=>document.getElementById(id);
+
+const esc=s=>String(s??'').replace(
+  /[&<>'"]/g,
+  c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    "'":'&#39;',
+    '"':'&quot;'
+  }[c])
+);
+
+const money=p=>'£'+(Number(p||0)/100).toFixed(2);
+
+const today=()=>new Date().toISOString().slice(0,10);
+
+
+async function api(url,opt={}){
+
+  const r=await fetch(url,{
+    headers:{
+      'Content-Type':'application/json',
+      ...(opt.headers||{})
+    },
+    ...opt
+  });
+
+  let data={};
+
+  try{
+    data=await r.json();
+  }catch{}
+
+  if(!r.ok){
+    throw new Error(data.error||'Something went wrong');
+  }
+
+  return data;
+}
+
+
+function showLogin(){
+
+  $('loginBox').classList.remove('hidden');
+  $('signupBox').classList.add('hidden');
+
+}
+
+
+function showSignup(){
+
+  $('loginBox').classList.add('hidden');
+  $('signupBox').classList.remove('hidden');
+
+}
+
+
+function notice(m){
+
+  $('authNotice').textContent=m;
+  $('authNotice').classList.remove('hidden');
+
+}
+
+
+async function login(){
+
+  try{
+
+    await api('/api/auth/login',{
+      method:'POST',
+      body:JSON.stringify({
+        email:$('loginEmail').value,
+        password:$('loginPassword').value
+      })
+    });
+
+    await init();
+
+  }catch(e){
+
+    notice(e.message);
+
+  }
+
+}
+
+
+async function signup(){
+
+  try{
+
+    const result=await api('/api/auth/signup',{
+      method:'POST',
+      body:JSON.stringify({
+        businessName:$('suBiz').value,
+        ownerName:$('suOwner').value,
+        email:$('suEmail').value,
+        password:$('suPassword').value,
+        phone:$('suPhone').value
+      })
+    });
+
+    if(result.needsEmailConfirmation){
+
+      showLogin();
+
+      notice(
+        result.message||
+        'Account created. Confirm your email, then sign in.'
+      );
+
+      return;
+
+    }
+
+    await init();
+
+  }catch(e){
+
+    notice(e.message);
+
+  }
+
+}
+
+
+async function logout(){
+
+  await api('/api/auth/logout',{
+    method:'POST'
+  });
+
+  location.href='/app';
+
+}
+
+
+async function init(){
+
+  let d;
+
+  /*
+   * Authentication is handled separately from dashboard loading.
+   *
+   * Previously any rendering/data error was caught here and JobPilot
+   * displayed the login screen, making it look as though the session
+   * had expired.
+   */
+  try{
+
+    d=await api('/api/me');
+
+  }catch(e){
+
+    $('shell').classList.add('hidden');
+    $('auth').classList.remove('hidden');
+
+    if(
+      new URLSearchParams(location.search).get('signup')==='1'
+    ){
+      showSignup();
+    }
+
+    return;
+
+  }
+
+
+  me={
+    ...d.user,
+    business:d.business
+  };
+
+
+  $('auth').classList.add('hidden');
+  $('shell').classList.remove('hidden');
+
+  $('who').textContent=me.business.name;
+
+  $('trialPlan').textContent=
+    me.business.plan==='trial'
+      ? 'Free trial'
+      : me.business.plan;
+
+  $('bookingLink').value=
+    location.origin+'/book/'+me.business.slug;
+
+  $('setSlug').value=
+    me.business.slug;
+
+
+  document
+    .querySelectorAll('aside button[data-view]')
+    .forEach(
+      b=>b.onclick=()=>switchView(b.dataset.view)
+    );
+
+
+  /*
+   * If dashboard data has a problem, keep the user signed in.
+   */
+  try{
+
+    await refresh();
+
+  }catch(e){
+
+    console.error(
+      'Dashboard data failed to load:',
+      e
+    );
+
+    alert(
+      'You are signed in, but some dashboard data could not load: '+
+      e.message
+    );
+
+  }
+
+
+  /*
+   * Settings are non-critical to authentication too.
+   */
+  try{
+
+    await loadSettings();
+
+  }catch(e){
+
+    console.error(
+      'Settings failed to load:',
+      e
+    );
+
+  }
+
+}
+
+
+function switchView(v){
+
+  document
+    .querySelectorAll('.view')
+    .forEach(
+      x=>x.classList.toggle(
+        'active',
+        x.id===v
+      )
+    );
+
+  document
+    .querySelectorAll('aside button[data-view]')
+    .forEach(
+      x=>x.classList.toggle(
+        'active',
+        x.dataset.view===v
+      )
+    );
+
+}
+
+
+async function refresh(){
+
+  [
+    services,
+    customers,
+    bookings
+  ]=await Promise.all([
+    api('/api/services'),
+    api('/api/customers'),
+    api('/api/bookings')
+  ]);
+
+  render();
+
+}
+
+
+function render(){
+
+  const t=today();
+  const month=t.slice(0,7);
+
+  const future=bookings.filter(
+    b=>
+      b.date>=t &&
+      b.status!=='Cancelled'
+  );
+
+
+  $('mToday').textContent=
+    bookings.filter(
+      b=>
+        b.date===t &&
+        b.status!=='Cancelled'
+    ).length;
+
+
+  $('mRevenue').textContent=
+    money(
+      future.reduce(
+        (a,b)=>a+b.pricePence,
+        0
+      )
+    );
+
+
+  $('mCustomers').textContent=
+    customers.length;
+
+
+  $('mMonth').textContent=
+    bookings.filter(
+      b=>b.date.startsWith(month)
+    ).length;
+
+
+  $('heroToday').textContent=
+    $('mToday').textContent;
+
+
+  $('heroUpcoming').textContent=
+    $('mRevenue').textContent;
+
+
+  $('bookingLinkHint').textContent=
+    `Your page is /book/${me.business.slug}`;
+
+
+  const sorted=[
+    ...bookings
+  ].sort(
+    (a,b)=>
+      (a.date+a.time)
+        .localeCompare(
+          b.date+b.time
+        )
+  );
+
+
+  $('nextJobs').innerHTML=
+    sorted
+      .filter(
+        b=>
+          b.date>=t &&
+          b.status!=='Cancelled'
+      )
+      .slice(0,6)
+      .map(
+        b=>`
+          <div style="padding:10px 0;border-bottom:1px solid #e2e8f0">
+            <b>${esc(b.customerName)}</b>
+            <span class="pill">${esc(b.status)}</span>
+            <div class="muted">
+              ${b.date} ${b.time}
+              · ${esc(b.serviceName)}
+              · ${money(b.pricePence)}
+            </div>
+          </div>
+        `
+      )
+      .join('')
+    ||
+    '<div class="empty muted">No upcoming jobs yet. Share your booking link to get started.</div>';
+
+
+  $('bookingRows').innerHTML=
+    bookings
+      .slice()
+      .reverse()
+      .map(
+        b=>`
+          <tr>
+
+            <td>
+              ${b.date}
+              <br>
+              <span class="muted">${b.time}</span>
+            </td>
+
+            <td>
+              <b>${esc(b.customerName)}</b>
+              <br>
+              <span class="muted">${esc(b.phone||'')}</span>
+            </td>
+
+            <td>
+              ${esc(b.serviceName)}
+            </td>
+
+            <td>
+              ${money(b.pricePence)}
+            </td>
+
+            <td>
+              <span class="pill ${
+                b.status==='Completed'
+                  ? 'blue'
+                  : b.status==='Cancelled'
+                    ? 'gray'
+                    : ''
+              }">
+                ${esc(b.status)}
+              </span>
+            </td>
+
+            <td>
+              <button
+                class="btn gray"
+                onclick="updateStatus('${b.id}','Completed')">
+                Complete
+              </button>
+            </td>
+
+          </tr>
+        `
+      )
+      .join('')
+    ||
+    '<tr><td colspan="6" class="muted">No bookings.</td></tr>';
+
+
+  $('customerRows').innerHTML=
+    customers
+      .map(
+        c=>`
+          <tr>
+
+            <td>
+              <b>${esc(c.name)}</b>
+              <br>
+              <span class="muted">${esc(c.email||'')}</span>
+            </td>
+
+            <td>
+              ${esc(c.phone||'')}
+            </td>
+
+            <td>
+              ${esc(c.vehicleDetails||'')}
+            </td>
+
+            <td>
+              ${c.bookingsCount||0}
+            </td>
+
+          </tr>
+        `
+      )
+      .join('')
+    ||
+    '<tr><td colspan="4" class="muted">No customers yet.</td></tr>';
+
+
+  $('serviceCards').innerHTML=
+    services
+      .map(
+        s=>`
+          <div class="card">
+
+            <div class="small muted">
+              SERVICE
+            </div>
+
+            <h3 style="margin:7px 0">
+              ${esc(s.name)}
+            </h3>
+
+            <div class="metric">
+              ${money(s.pricePence)}
+            </div>
+
+            <div class="muted">
+              ${s.durationMin} minutes
+            </div>
+
+          </div>
+        `
+      )
+      .join('')
+    ||
+    '<div class="card"><div class="muted">No services yet.</div></div>';
+
+}
+
+
+async function updateStatus(id,status){
+
+  try{
+
+    await api(
+      '/api/bookings/'+id,
+      {
+        method:'PATCH',
+        body:JSON.stringify({
+          status
+        })
+      }
+    );
+
+    await refresh();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+
+}
+
+
+async function loadSettings(){
+
+  const d=
+    await api('/api/settings');
+
+
+  $('setBiz').value=
+    d.businessName||'';
+
+
+  $('setOwner').value=
+    d.ownerName||'';
+
+
+  $('setPhone').value=
+    d.phone||'';
+
+
+  $('setSlug').value=
+    d.slug||'';
+
+
+  $('setIntro').value=
+    d.intro||'';
+
+
+  $('setStart').value=
+    d.workdayStart||'09:00';
+
+
+  $('setEnd').value=
+    d.workdayEnd||'17:00';
+
+}
+
+
+async function saveSettings(){
+
+  try{
+
+    await api(
+      '/api/settings',
+      {
+        method:'PATCH',
+        body:JSON.stringify({
+
+          businessName:
+            $('setBiz').value,
+
+          ownerName:
+            $('setOwner').value,
+
+          phone:
+            $('setPhone').value,
+
+          intro:
+            $('setIntro').value,
+
+          workdayStart:
+            $('setStart').value,
+
+          workdayEnd:
+            $('setEnd').value
+
+        })
+      }
+    );
+
+
+    $('settingsMsg').textContent=
+      'Saved.';
+
+
+    setTimeout(
+      ()=>
+        $('settingsMsg').textContent='',
+      1800
+    );
+
+
+    await init();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+
+}
+
+
+function openModal(html){
+
+  $('modalBox').innerHTML=html;
+  $('modal').classList.add('show');
+
+}
+
+
+function closeModal(){
+
+  $('modal').classList.remove('show');
+
+}
+
+
+function openCustomer(){
+
+  openModal(`
+    <h2>New customer</h2>
+
+    <div class="field">
+      <label>Name</label>
+      <input id="cName">
+    </div>
+
+    <div class="field">
+      <label>Phone</label>
+      <input id="cPhone">
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="cEmail">
+    </div>
+
+    <div class="field">
+      <label>Vehicle</label>
+      <input
+        id="cVehicle"
+        placeholder="BMW 3 Series, black">
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn"
+        onclick="addCustomer()">
+        Save customer
+      </button>
+
+      <button
+        class="btn gray"
+        onclick="closeModal()">
+        Cancel
+      </button>
+
+    </div>
+  `);
+
+}
+
+
+async function addCustomer(){
+
+  try{
+
+    await api(
+      '/api/customers',
+      {
+        method:'POST',
+        body:JSON.stringify({
+
+          name:
+            $('cName').value,
+
+          phone:
+            $('cPhone').value,
+
+          email:
+            $('cEmail').value,
+
+          vehicleDetails:
+            $('cVehicle').value
+
+        })
+      }
+    );
+
+
+    closeModal();
+
+    await refresh();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+
+}
+
+
+function openService(){
+
+  openModal(`
+    <h2>Add a service</h2>
+
+    <div class="field">
+      <label>Name</label>
+      <input
+        id="sName"
+        placeholder="Full Valet">
+    </div>
+
+    <div class="grid2">
+
+      <div class="field">
+        <label>Duration (minutes)</label>
+        <input
+          id="sDur"
+          type="number"
+          value="90">
+      </div>
+
+      <div class="field">
+        <label>Price (£)</label>
+        <input
+          id="sPrice"
+          type="number"
+          step="0.01"
+          value="80">
+      </div>
+
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn"
+        onclick="addService()">
+        Save service
+      </button>
+
+      <button
+        class="btn gray"
+        onclick="closeModal()">
+        Cancel
+      </button>
+
+    </div>
+  `);
+
+}
+
+
+async function addService(){
+
+  try{
+
+    await api(
+      '/api/services',
+      {
+        method:'POST',
+        body:JSON.stringify({
+
+          name:
+            $('sName').value,
+
+          durationMin:
+            $('sDur').value,
+
+          price:
+            $('sPrice').value
+
+        })
+      }
+    );
+
+
+    closeModal();
+
+    await refresh();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+
+}
+
+
+function openBooking(){
+
+  if(!customers.length){
+
+    alert(
+      'Add a customer first, or use your public booking page to create the first customer.'
+    );
+
+    return;
+
+  }
+
+
+  openModal(`
+    <h2>New booking</h2>
+
+    <div class="field">
+
+      <label>Customer</label>
+
+      <select id="bC">
+
+        <option value="">
+          Select customer
+        </option>
+
+        ${
+          customers
+            .map(
+              c=>`
+                <option value="${c.id}">
+                  ${esc(c.name)}
+                  —
+                  ${esc(c.phone||'')}
+                </option>
+              `
+            )
+            .join('')
+        }
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>Service</label>
+
+      <select id="bS">
+
+        ${
+          services
+            .map(
+              s=>`
+                <option value="${s.id}">
+                  ${esc(s.name)}
+                  —
+                  ${money(s.pricePence)}
+                </option>
+              `
+            )
+            .join('')
+        }
+
+      </select>
+
+    </div>
+
+
+    <div class="grid2">
+
+      <div class="field">
+        <label>Date</label>
+        <input
+          id="bD"
+          type="date"
+          value="${today()}">
+      </div>
+
+      <div class="field">
+        <label>Time</label>
+        <input
+          id="bT"
+          type="time"
+          value="10:00">
+      </div>
+
+    </div>
+
+
+    <div class="field">
+      <label>Address</label>
+      <input id="bA">
+    </div>
+
+
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="bN"></textarea>
+    </div>
+
+
+    <div class="actions">
+
+      <button
+        class="btn"
+        onclick="addBooking()">
+        Create booking
+      </button>
+
+      <button
+        class="btn gray"
+        onclick="closeModal()">
+        Cancel
+      </button>
+
+    </div>
+  `);
+
+}
+
+
+async function addBooking(){
+
+  try{
+
+    await api(
+      '/api/bookings',
+      {
+        method:'POST',
+        body:JSON.stringify({
+
+          customerId:
+            $('bC').value,
+
+          serviceId:
+            $('bS').value,
+
+          date:
+            $('bD').value,
+
+          time:
+            $('bT').value,
+
+          address:
+            $('bA').value,
+
+          notes:
+            $('bN').value
+
+        })
+      }
+    );
+
+
+    closeModal();
+
+    await refresh();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+
+}
+
+
+async function makeQuote(){
+
+  try{
+
+    $('qOutput').value=
+      'Generating…';
+
+
+    const d=
+      await api(
+        '/api/quotes/draft',
+        {
+          method:'POST',
+          body:JSON.stringify({
+
+            customerName:
+              $('qName').value||
+              'there',
+
+            message:
+              $('qMessage').value
+
+          })
+        }
+      );
+
+
+    $('qOutput').value=
+      d.draft;
+
+  }catch(e){
+
+    alert(e.message);
+
+    $('qOutput').value='';
+
+  }
+
+}
+
+
+function copyText(v){
+
+  navigator.clipboard
+    ?.writeText(v);
+
+}
+
+
+function copyQuote(){
+
+  copyText(
+    $('qOutput').value
+  );
+
+}
+
+
+function copyLink(){
+
+  copyText(
+    $('bookingLink').value
+  );
+
+
+  $('bookingLinkHint').textContent=
+    'Copied to clipboard.';
+
+
+  setTimeout(
+    ()=>render(),
+    1800
+  );
+
+}
+
+
+async function checkout(){
+
+  try{
+
+    const d=
+      await api(
+        '/api/billing/checkout',
+        {
+          method:'POST'
+        }
+      );
+
+
+    location.href=
+      d.url;
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+
+}
+
+
 init();
-</script></body></html>
+
+</script>
+
+</body>
+</html>
