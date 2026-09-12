@@ -1442,32 +1442,74 @@ async function addBooking(){
 }
 
 
+/* ================================
+   IMPROVED AI QUOTE ASSISTANT
+   ================================ */
+
 async function makeQuote(){
 
   try{
 
-    $('qOutput').value=
-      'Generating…';
+    $('qOutput').value='Generating…';
 
+    const customerName =
+      $('qName').value.trim() || 'there';
 
-    const d=
+    const enquiry =
+      $('qMessage').value.trim();
+
+    if(!enquiry){
+
+      $('qOutput').value='';
+      alert('Please enter the customer enquiry first.');
+      return;
+
+    }
+
+    /*
+     * We send a much clearer instruction to the existing
+     * /api/quotes/draft endpoint.
+     *
+     * The backend already supplies the business services
+     * and exact prices to the AI. This instruction tells
+     * the model how to use that information naturally.
+     */
+    const instruction = `
+You are replying to a customer on behalf of a UK mobile car detailing business.
+
+Customer name: ${customerName}
+
+Customer enquiry:
+${enquiry}
+
+Write a short, natural, friendly WhatsApp-style reply.
+
+IMPORTANT:
+- Answer the customer's actual question directly.
+- If they mention a specific service, quote that service and its exact listed price.
+- Do not list every service unless the customer asks what services are available.
+- Never invent a price.
+- Never invent availability.
+- If they ask about a date or time, say you can check availability but do not claim that a slot is available unless availability has actually been checked.
+- If important information is missing, ask only for the information needed to progress the enquiry.
+- If they mention a vehicle, use it naturally in the response.
+- Use UK English.
+- Do not sound like a generic AI or sales bot.
+- Keep the reply concise, normally 2–5 sentences.
+- Do not use headings or bullet points.
+`;
+
+    const d =
       await api(
         '/api/quotes/draft',
         {
           method:'POST',
           body:JSON.stringify({
-
-            customerName:
-              $('qName').value||
-              'there',
-
-            message:
-              $('qMessage').value
-
+            customerName,
+            message:instruction
           })
         }
       );
-
 
     $('qOutput').value=
       d.draft;
