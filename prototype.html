@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JobPilot</title>
+<style>
+:root{--bg:#f6f7fb;--panel:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;--accent2:#1d4ed8;--ok:#16a34a;--warn:#d97706;--danger:#dc2626;}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#111827;color:#fff;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}.brand{font-weight:800;font-size:20px}.brand span{color:#60a5fa}.small{font-size:13px;color:#cbd5e1}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 63px)}nav{background:#0f172a;padding:18px 12px}nav button{width:100%;border:0;background:transparent;color:#cbd5e1;text-align:left;padding:12px 14px;border-radius:9px;cursor:pointer;margin-bottom:4px}nav button:hover,nav button.active{background:#1e293b;color:#fff}
+main{padding:26px;max-width:1400px;width:100%;margin:auto}.page{display:none}.page.active{display:block}.row{display:grid;gap:18px}.row.cols3{grid-template-columns:repeat(3,1fr)}.row.cols2{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 16px rgba(15,23,42,.04)}
+h1{font-size:30px;margin:0 0 7px}h2{font-size:20px;margin:0 0 14px}h3{font-size:15px;margin:0 0 8px}.muted{color:var(--muted)}.metric{font-size:30px;font-weight:800;margin:8px 0}.label{font-size:13px;color:var(--muted)}
+.btn{border:0;border-radius:9px;padding:10px 14px;background:var(--accent);color:#fff;cursor:pointer;font-weight:700}.btn:hover{background:var(--accent2)}.btn.secondary{background:#eef2ff;color:#1e40af}.btn.ghost{background:#f3f4f6;color:#111827}.btn.danger{background:#fee2e2;color:#991b1b}.actions{display:flex;gap:8px;flex-wrap:wrap}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff}textarea{min-height:110px;resize:vertical}.field{margin-bottom:12px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+.table{width:100%;border-collapse:collapse}.table th,.table td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}.table th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}.pill{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700;background:#eff6ff;color:#1d4ed8}.pill.green{background:#ecfdf5;color:#166534}.pill.amber{background:#fffbeb;color:#92400e}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.day{background:#fff;border:1px solid var(--line);min-height:130px;border-radius:10px;padding:10px}.day strong{font-size:12px}.event{margin-top:8px;background:#eff6ff;border-left:3px solid var(--accent);padding:6px;border-radius:6px;font-size:12px}.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.modalbox{background:#fff;border-radius:14px;max-width:620px;width:100%;padding:22px;max-height:90vh;overflow:auto}.right{margin-left:auto}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav{display:flex;overflow:auto;gap:6px;position:sticky;top:63px;z-index:4}nav button{white-space:nowrap;width:auto}.row.cols3,.row.cols2{grid-template-columns:1fr}.calendar{grid-template-columns:1fr}.day{min-height:auto}}
+</style>
+</head>
+<body>
+<header><div class="brand">JobPilot <span>AI</span></div><div class="small">UK service business MVP</div></header>
+<div class="layout">
+<nav>
+<button class="active" data-page="dashboard">Dashboard</button>
+<button data-page="bookings">Bookings</button>
+<button data-page="customers">Customers</button>
+<button data-page="services">Services</button>
+<button data-page="quote">AI Quote Assistant</button>
+<button data-page="settings">Business Settings</button>
+</nav>
+<main>
+<section id="dashboard" class="page active">
+<div style="display:flex;align-items:end;margin-bottom:18px;gap:12px"><div><h1>Good morning 👋</h1><div class="muted">Here’s what’s happening with your business.</div></div><button class="btn right" onclick="openBooking()">+ New booking</button></div>
+<div class="row cols3">
+<div class="card"><div class="label">Today’s jobs</div><div class="metric" id="mToday">0</div><div class="muted">appointments scheduled</div></div>
+<div class="card"><div class="label">Upcoming revenue</div><div class="metric" id="mRevenue">£0</div><div class="muted">from booked jobs</div></div>
+<div class="card"><div class="label">Customers</div><div class="metric" id="mCustomers">0</div><div class="muted">in your database</div></div>
+</div>
+<div class="row cols2" style="margin-top:18px">
+<div class="card"><h2>Next appointments</h2><div id="nextAppointments"></div></div>
+<div class="card"><h2>Quick actions</h2><div class="actions"><button class="btn secondary" onclick="openBooking()">Add booking</button><button class="btn ghost" onclick="showPage('quote')">Draft a quote</button><button class="btn ghost" onclick="showPage('customers')">Add customer</button></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><div class="muted">This MVP stores data in your browser so you can test the workflow without a backend.</div></div>
+</div>
+</section>
+
+<section id="bookings" class="page"><div style="display:flex;align-items:end;margin-bottom:18px"><div><h1>Bookings</h1><div class="muted">Manage upcoming work.</div></div><button class="btn right" onclick="openBooking()">+ New booking</button></div><div class="card"><table class="table"><thead><tr><th>Date</th><th>Customer</th><th>Service</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody id="bookingTable"></tbody></table></div><div style="margin-top:18px" class="card"><h2>7-day view</h2><div class="calendar" id="calendar"></div></div></section>
+
+<section id="customers" class="page"><div style="display:flex;align-items:end;margin-bottom:18px"><div><h1>Customers</h1><div class="muted">Your customer list and notes.</div></div><button class="btn right" onclick="openCustomer()">+ New customer</button></div><div class="card"><table class="table"><thead><tr><th>Name</th><th>Phone</th><th>Vehicle / details</th><th>Bookings</th><th></th></tr></thead><tbody id="customerTable"></tbody></table></div></section>
+
+<section id="services" class="page"><div style="display:flex;align-items:end;margin-bottom:18px"><div><h1>Services</h1><div class="muted">Set your standard prices so quotes are faster.</div></div><button class="btn right" onclick="openService()">+ Add service</button></div><div class="card"><table class="table"><thead><tr><th>Service</th><th>Duration</th><th>Price</th><th></th></tr></thead><tbody id="serviceTable"></tbody></table></div></section>
+
+<section id="quote" class="page"><h1>AI Quote Assistant</h1><div class="muted" style="margin-bottom:18px">Paste a customer enquiry and JobPilot will turn it into a professional draft quote.</div><div class="row cols2"><div class="card"><h2>Customer enquiry</h2><div class="field"><label>Message</label><textarea id="quoteInput" placeholder="Hi, how much for a full valet on my BMW 3 Series at my home in Solihull next Saturday?"></textarea></div><div class="field"><label>Optional customer name</label><input id="quoteName" placeholder="Jamie"></div><button class="btn" onclick="generateQuote()">Generate draft</button></div><div class="card"><h2>Draft reply</h2><textarea id="quoteOutput" placeholder="Your draft will appear here..."></textarea><div class="actions" style="margin-top:10px"><button class="btn secondary" onclick="copyQuote()">Copy message</button><button class="btn ghost" onclick="saveQuoteAsBooking()">Use as booking</button></div></div></div></section>
+
+<section id="settings" class="page"><h1>Business Settings</h1><div class="muted" style="margin-bottom:18px">Basic details used throughout the app.</div><div class="card" style="max-width:760px"><div class="field"><label>Business name</label><input id="bizName"></div><div class="field"><label>Owner name</label><input id="ownerName"></div><div class="field"><label>Phone</label><input id="bizPhone"></div><div class="field"><label>Default travel radius</label><input id="radius" type="number" min="0" placeholder="20"><div class="muted" style="font-size:12px;margin-top:5px">Miles. Useful later for mobile jobs.</div></div><button class="btn" onclick="saveSettings()">Save settings</button></div></section>
+</main></div>
+
+<div id="modal" class="modal"><div class="modalbox"><div id="modalContent"></div></div></div>
+<script>
+const key='jobflow_state_v1';
+function load(){return JSON.parse(localStorage.getItem(key)||'null')||{business:{name:'Your Business',owner:'',phone:'',radius:20},services:[{id:1,name:'Full Valet',duration:120,price:80},{id:2,name:'Mini Valet',duration:60,price:45},{id:3,name:'Exterior Detail',duration:90,price:60}],customers:[],bookings:[]}}
+let state=load(); function save(){localStorage.setItem(key,JSON.stringify(state)); render()}
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function money(n){return '£'+Number(n||0).toFixed(2)}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(p).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function openModal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modal').classList.add('show')} function closeModal(){document.getElementById('modal').classList.remove('show')}
+function openCustomer(){openModal(`<h2>New customer</h2><div class="field"><label>Name</label><input id="cName"></div><div class="field"><label>Phone</label><input id="cPhone"></div><div class="field"><label>Vehicle / details</label><input id="cDetails" placeholder="BMW 3 Series, black"></div><div class="actions"><button class="btn" onclick="addCustomer()">Save customer</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function addCustomer(){state.customers.push({id:Date.now(),name:document.getElementById('cName').value.trim(),phone:document.getElementById('cPhone').value.trim(),details:document.getElementById('cDetails').value.trim()});closeModal();save()}
+function openService(){openModal(`<h2>New service</h2><div class="field"><label>Name</label><input id="sName"></div><div class="field"><label>Duration (minutes)</label><input id="sDuration" type="number" value="60"></div><div class="field"><label>Price (£)</label><input id="sPrice" type="number" step="0.01" value="50"></div><div class="actions"><button class="btn" onclick="addService()">Save service</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function addService(){state.services.push({id:Date.now(),name:document.getElementById('sName').value.trim(),duration:+document.getElementById('sDuration').value||60,price:+document.getElementById('sPrice').value||0});closeModal();save()}
+function openBooking(){openModal(`<h2>New booking</h2><div class="field"><label>Customer</label><select id="bCustomer"><option value="">— Select —</option>${state.customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><div class="field"><label>Service</label><select id="bService">${state.services.map(s=>`<option value="${s.id}">${esc(s.name)} — ${money(s.price)}</option>`).join('')}</select></div><div class="row cols2"><div class="field"><label>Date</label><input id="bDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Time</label><input id="bTime" type="time" value="10:00"></div></div><div class="field"><label>Address / job notes</label><textarea id="bNotes" placeholder="Customer address, access notes, vehicle details..."></textarea></div><div class="actions"><button class="btn" onclick="addBooking()">Create booking</button><button class="btn ghost" onclick="closeModal()">Cancel</button></div>`)}
+function addBooking(){const c=state.customers.find(x=>x.id==document.getElementById('bCustomer').value);const s=state.services.find(x=>x.id==document.getElementById('bService').value);if(!c||!s){alert('Please select a customer and service.');return}state.bookings.push({id:Date.now(),customerId:c.id,serviceId:s.id,date:document.getElementById('bDate').value,time:document.getElementById('bTime').value,notes:document.getElementById('bNotes').value,status:'Booked',price:s.price});closeModal();save()}
+function deleteBooking(id){state.bookings=state.bookings.filter(b=>b.id!==id);save()}
+function generateQuote(){const msg=document.getElementById('quoteInput').value.trim();const name=document.getElementById('quoteName').value.trim()||'there';if(!msg){alert('Paste the customer enquiry first.');return}let service=state.services[0];const low=msg.toLowerCase();for(const s of state.services){if(low.includes(s.name.toLowerCase().split(' ')[0])){service=s;break}}document.getElementById('quoteOutput').value=`Hi ${name},\n\nThanks for getting in touch. Based on your enquiry, our ${service.name.toLowerCase()} is £${service.price.toFixed(2)}.\n\nWe can arrange a convenient appointment and carry out the work at your chosen location, subject to availability.\n\nIf you'd like to go ahead, send over your preferred date/time and the job address and I'll get you booked in.\n\nThanks,\n${state.business.owner||state.business.name}`}
+function copyQuote(){navigator.clipboard?.writeText(document.getElementById('quoteOutput').value);alert('Draft copied.')}
+function saveQuoteAsBooking(){showPage('bookings');openBooking()}
+function saveSettings(){state.business={name:document.getElementById('bizName').value,owner:document.getElementById('ownerName').value,phone:document.getElementById('bizPhone').value,radius:+document.getElementById('radius').value||0};save();alert('Settings saved.')}
+function render(){document.getElementById('mToday').textContent=state.bookings.filter(b=>b.date===new Date().toISOString().slice(0,10)).length;document.getElementById('mRevenue').textContent=money(state.bookings.filter(b=>b.date>=new Date().toISOString().slice(0,10)).reduce((a,b)=>a+b.price,0));document.getElementById('mCustomers').textContent=state.customers.length;
+const sorted=[...state.bookings].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));document.getElementById('nextAppointments').innerHTML=sorted.slice(0,6).map(b=>{const c=state.customers.find(x=>x.id===b.customerId),s=state.services.find(x=>x.id===b.serviceId);return `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${esc(c?.name||'Unknown')}</b><div class="muted" style="font-size:13px">${esc(s?.name||'Service')} · ${b.date} ${b.time}</div></div><span class="pill">${money(b.price)}</span></div>`}).join('')||'<div class="muted">No bookings yet.</div>';
+document.getElementById('bookingTable').innerHTML=sorted.map(b=>{const c=state.customers.find(x=>x.id===b.customerId),s=state.services.find(x=>x.id===b.serviceId);return `<tr><td>${b.date}<br><span class="muted">${b.time}</span></td><td>${esc(c?.name||'Unknown')}</td><td>${esc(s?.name||'Service')}</td><td>${money(b.price)}</td><td><span class="pill green">${esc(b.status)}</span></td><td><button class="btn danger" onclick="deleteBooking(${b.id})">Delete</button></td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No bookings.</td></tr>';
+const days=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);days.push(d)}document.getElementById('calendar').innerHTML=days.map(d=>{const ds=d.toISOString().slice(0,10),items=state.bookings.filter(b=>b.date===ds);return `<div class="day"><strong>${d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</strong>${items.map(b=>{const c=state.customers.find(x=>x.id===b.customerId),s=state.services.find(x=>x.id===b.serviceId);return `<div class="event"><b>${b.time}</b><br>${esc(c?.name||'Unknown')}<br>${esc(s?.name||'')}</div>`}).join('')}</div>`}).join('');
+document.getElementById('customerTable').innerHTML=state.customers.map(c=>`<tr><td><b>${esc(c.name)}</b></td><td>${esc(c.phone)}</td><td>${esc(c.details)}</td><td>${state.bookings.filter(b=>b.customerId===c.id).length}</td><td></td></tr>`).join('')||'<tr><td colspan="5" class="muted">No customers yet.</td></tr>';
+document.getElementById('serviceTable').innerHTML=state.services.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td>${s.duration} mins</td><td>${money(s.price)}</td><td></td></tr>`).join('');
+document.getElementById('bizName').value=state.business.name||'';document.getElementById('ownerName').value=state.business.owner||'';document.getElementById('bizPhone').value=state.business.phone||'';document.getElementById('radius').value=state.business.radius??20;
+}
+render();
+</script></body></html>
