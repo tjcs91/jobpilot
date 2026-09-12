@@ -8,6 +8,7 @@ const PORT = Number(process.env.PORT || 3000);
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const DATA_DIR = process.env.DATA_DIR || __dirname;
 const DATA_FILE = path.join(DATA_DIR, 'jobpilot-data.json');
+const PUBLIC_DIR = process.env.PUBLIC_DIR || __dirname;
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, {recursive:true});
 const SESSION_DAYS = Number(process.env.SESSION_DAYS || 30);
 
@@ -35,7 +36,7 @@ function json(res,status,payload,extraHeaders={}){
   res.end(body);
 }
 function html(res,file){
-  const body=fs.readFileSync(path.join(__dirname,'public',file));
+  const body=fs.readFileSync(path.join(PUBLIC_DIR,file));
   res.writeHead(200, {'Content-Type':'text/html; charset=utf-8','X-Content-Type-Options':'nosniff','Content-Length':body.length}); res.end(body);
 }
 function setSession(res,userId){
@@ -135,7 +136,7 @@ async function handle(req,res){
     if(method==='POST'&&p==='/api/billing/checkout') return json(res,503,{error:'Billing connection is the next external integration. Add Stripe credentials when ready.'});
     // Static assets
     if(method==='GET'){
-      const pathname=decodeURIComponent(p); const safe=pathname.replace(/^\/+/, ''); const file=path.join(__dirname,'public',safe); if(file.startsWith(path.join(__dirname,'public')) && fs.existsSync(file) && fs.statSync(file).isFile()){ const ext=path.extname(file); const type={'.html':'text/html','.css':'text/css','.js':'application/javascript','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream'; const buf=fs.readFileSync(file);res.writeHead(200,{'Content-Type':type,'X-Content-Type-Options':'nosniff','Content-Length':buf.length});return res.end(buf); }
+      const pathname=decodeURIComponent(p); const safe=pathname.replace(/^\/+/, ''); const file=path.join(PUBLIC_DIR,safe); if(file.startsWith(PUBLIC_DIR) && fs.existsSync(file) && fs.statSync(file).isFile()){ const ext=path.extname(file); const type={'.html':'text/html','.css':'text/css','.js':'application/javascript','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream'; const buf=fs.readFileSync(file);res.writeHead(200,{'Content-Type':type,'X-Content-Type-Options':'nosniff','Content-Length':buf.length});return res.end(buf); }
     }
     return json(res,404,{error:'Not found'});
   }catch(e){ console.error(e); return json(res,500,{error:'Server error'}); }
